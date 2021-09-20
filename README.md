@@ -359,7 +359,7 @@ latex数学符号详见：常用数学符号的 LaTeX 表示方法
 &#8195;![](https://img-blog.csdn.net/20180802170102176?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTQwNjE2MzA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70)  
 
 3.在线编辑markdown https://www.zybuluo.com/mdeditor  
-本文参考文章：
+本文参考文章：  
 http://blog.csdn.net/u010177286/article/details/50358720  
 https://www.zybuluo.com/mdeditor  
 http://blog.leanote.com/post/freewalk/Markdown-%E8%AF%AD%E6%B3%95%E6%89%8B%E5%86%8C#title-18
