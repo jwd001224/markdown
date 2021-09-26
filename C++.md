@@ -5,7 +5,7 @@
 IDE推荐：CLion  
 编译器：GCC或G++  
 调试器：GDB  
-## C++基础入门
+## C++基础及进阶
 
 ### 1. C++与C的对比
 
@@ -128,9 +128,9 @@ IDE推荐：CLion
             public: 
                 static int i; 
                 Apple() { }; 
-        }; 
-        int Apple::i = 0;//必须类外初始化
-        int main() 
+    }; 
+    int Apple::i = 0;//必须类外初始化
+    int main() 
     { 
         Apple obj1; 
         Apple obj2; 
@@ -467,25 +467,25 @@ IDE推荐：CLion
         - 3.不用写返回值，可以重载，可以有参数  
         - 4.构造函数名称与类名相同  
         - 5.构造函数的分类及调用  
-            - 1.分类：
-                按照参数分类
-                按照类型分类
-            - 2.调用：
-                括号法
-                显示法
-                隐式转换法
-            - 3.注意事项：
-                在调用默认构造函数时，不要加()
-                不要利用拷贝构造函数来初始化匿名对象，编译器会将其等价为对象声明
+            - 1.分类：  
+                按照参数分类  
+                按照类型分类  
+            - 2.调用：  
+                括号法  
+                显示法  
+                隐式转换法  
+            - 3.注意事项：  
+                在调用默认构造函数时，不要加()   
+                不要利用拷贝构造函数来初始化匿名对象，编译器会将其等价为对象声明  
     - （2）析构函数  
-        - 1.如果程序员不写，系统会自动写上，此时构造函数为空  
-        - 2.构造函数会自动调用，而且只调用一次  
-        - 3.不用写返回值，不可以重载，不可以有参数  
-        - 4.构造函数名称与类名相同 + ”~“  
-        - 5.一般在最后执行
+        - 1.如果程序员不写，系统会自动写上，此时构造函数为空    
+        - 2.构造函数会自动调用，而且只调用一次   
+        - 3.不用写返回值，不可以重载，不可以有参数   
+        - 4.构造函数名称与类名相同 + ”~“   
+        - 5.一般在最后执行 
     - （3）拷贝函数  
-        - 1.浅拷贝 ==> 连同地址拷贝，可能会释放两边相同的内存  
-        - 2.深拷贝 ==> 在堆区开辟新内存  
+        - 1.浅拷贝 ==> 连同地址拷贝，可能会释放两边相同的内存    
+        - 2.深拷贝 ==> 在堆区开辟新内存    
     - 程序举例  
         ```
         class A
@@ -543,21 +543,602 @@ IDE推荐：CLion
         ```
 - 8.2 class的拓展组成结构  
   - 8.2.1 friend友元
-  - 8.2.2 this指针
-  - 8.2.3 static静态成员变量及函数
-  - 8.2.4 const常成员变量及成员函数
-  - 8.2.5 mutable关键字
-- 8.3 class的运用
-  - 8.3.1 运算符重载
-  - 8.3.2 继承
-  - 8.3.3 多态
-  - 8.3.4 作用域
+    - 概述  
+    友元提供了一种 普通函数或者类成员函数 访问另一个类中的私有或保护成员 的机制。也就是说有两种形式的友元：  
+    （1）友元函数：普通函数对一个访问某个类中的私有或保护成员。  
+    （2）友元类：类A中的成员函数访问类B中的私有或保护成员。  
+        优点：提高了程序的运行效率。  
+        缺点：破坏了类的封装性和数据的透明性。  
+        总结：  
+              - 能访问私有成员  
+              - 破坏封装性   
+              - 友元关系不可传递   
+              - 友元关系的单向性   
+              - 友元声明的形式及数量不受限制  
+    - 友元函数  
+    在类声明的任何区域中声明，而定义则在类的外部。  
+    注意：友元函数只是一个普通函数，并不是该类的类成员函数，它可以在任何地方调用，友元函数中通过对象名来访问该类的私有或保护成员。  
+        ```
+        class A
+        {
+            friend int geta(A &ca); // 友元函数，相当于加了friend的函数声明
+            public:
+                A(int _a):a(_a){};
+            private:
+                int a;
+        };
+        int geta(A &ca) 
+        {
+            return ca.a;
+        }
+        int main()
+        {
+            A a(3);    
+            cout << geta(a) << endl;
+            return 0;
+        }
+        ```
+    - 友元类  
+    友元类的声明在该类的声明中，而实现在该类外。  
+    类B是类A的友元，那么类B可以直接访问A的私有成员。
+        ```
+        class B;//声明
+        class A
+        {
+            friend class B;//放在本类之前
+            public:
+                A(int _a):a(_a){};   
+            private:
+                int a;
+        };
+        class B
+        {
+            public:
+                int getb(A ca) {
+                    return  ca.a; 
+                };
+        };
+        int main() 
+        {
+            A a(3);
+            B b;
+            cout << b.getb(a) << endl;
+            return 0;
+        }
+        ```
+    - 注意  
+        - 友元关系没有继承性 假如类B是类A的友元，类C继承于类A，那么友元类B是没办法直接访问类C的私有或保护成员。  
+        - 友元关系没有传递性 假如类B是类A的友元，类C是类B的友元，那么友元类C是没办法直接访问类A的私有或保护成员，也就是不存在“友元的友元”这种关系。  
+  - 8.2.2 this指针  
+    见[this指针](#3-this指针)  
+  - 8.2.3 static静态成员变量及函数  
+    见[static静态成员及函数](#2-static关键字)  
+  - 8.2.4 const常成员变量及成员函数  
+    见[const](#1-const关键字)  
+  - 8.2.5 mutable关键字  
+    `mutalbe`的中文意思是“可变的，易变的”，跟`const`）是反义词。  
+    在C++中，`mutable`也是为了突破`const`的限制而设置的。被`mutable`修饰的变量，将永远处于可变的状态，即使在一个`const`函数中。  
+    被`const`关键字修饰的函数的一个重要作用就是为了能够保护类中的成员变量。即：该函数可以使用类中的所有成员变量，但是不能修改他们的值。然而，在某些特殊情况下，我们还是需要在`const`函数中修改类的某些成员变量，因为要修改的成员变量与类本身并无多少关系，即使修改了也不会对类造成多少影响。当然，你可以说，你可以去掉该函数的`const`关键字呀！但问题是，我只想修改某个成员变量，其余成员变量仍然希望被`const`保护。
+    即：为了解除类内常成员函数对成员变量的保护作用，但不想全部解除，所以在需要改变的成员变量前加`mutable`。
+    ```
+    class A
+    {
+        private: mutable int b;//可以被常函数改变
+        public:
+            A(int b){this->b = b;}
+            void set(int b) const{this->b = b;}可以且仅可以改变mutable修饰的变量
+            void show(){cout << b << endl;}
+    };
+    int main(){
+        A a(30);
+        a.set(20);
+        a.show();
+        return 0;
+    }
+    ```
+- 8.3 class的运用  
+  - 8.3.1 运算符重载   
+  直接对类操作，进行运算  
+    - 双目运算符重载  
+    对“+，-，*，/，%”进行重载  
+    类内定义：  
+    ```
+    class B{ 
+        public:
+            B(int a,int b){
+                this->a = a;
+                this->b = b;
+            }
+            int a;
+            int b;
+    };
+    class A{
+        public:
+            A operator+(B &b){
+                A temp;
+                temp.a = this->a + b.a;
+                temp.b = this->b + b.a;
+                return temp;
+            }
+            A operator+(B &b)
+            void init(int a,int b){
+                this->a = a;
+                this->b = b;
+            }
+            int a;
+            int b;
+    };
+    A A::operator+(B &b){
+        A *temp;
+        temp->a = this->a + b.a;
+        temp->b = this->b + b.b;
+        return *temp;
+    }    
+    int main(){
+        A a;
+        a.init(40,30);
+        B b;
+        b.init(20,10);
+        a = a + b;
+        cout << a.a << endl;
+        cout << a.b << endl;
+    }
+    ```
+    类外定义：
+    ```
+    class B{   
+        public:
+            void init(int a,int b){
+                this->a = a;
+                this->b = b;
+            }
+            int a;
+            int b;
+    };
+    class A{
+        public:
+            void init(int a,int b){
+                this->a = a;
+                this->b = b;
+            }
+            
+            int a;
+            int b;
+    };          
+    A operator+(B &b,A &a){
+        A temp;
+        temp.a = a.a + b.a;
+        temp.b = a.b + b.b;
+        return temp;
+    }
+    int main(){
+        A a;
+        B b;
+        b.init(40,30);
+        a.init(20,10);
+        a = b + a;
+        cout << a.a << endl;
+        cout << a.b << endl;
+        return 0;
+    }
+    ``` 
+    - 位运算符重载  
+    “<<，>>”，只能类外重载
+    输出类外重载：
+    ```
+    class A{
+        public:
+            void init(int a,int b){
+                this->a = a;
+                this->b = b;
+            }
+            int a;
+            int b;
+    };          
+    ostream& operator<<(ostream &cout,A &a)//加“&”可以连续输出
+    {
+        cout << a.a << endl;
+        cout << a.b << endl;
+    }
+    int main()
+    {
+        A a;
+        a.init(20,10);
+        cout << a << endl;
+
+        return 0;
+    }
+    ```
+    输入类外重载：
+    ```
+    #include <iostream>
+    using namespace std; 
+
+    class A{
+        public:
+            void init(int a,int b){
+                this->a = a;
+                this->b = b;
+            }
+            int a;
+            int b;
+    };          
+    istream& operator>>(istream &cin,A &a){//加“&”可以连续输入
+        cin >> a.a >> a.b;
+    }
+    ostream& operator<<(ostream &cout,A &a){//加“&”可以连续输出
+        cout << a.a << "  " << a.b << endl;
+    }
+    int main(){
+        A a;
+        a.init(20,10);
+        cin >> a;
+        cout << a << endl;
+        return 0;
+    }    
+    ```
+    - 自增自减运算符重载  
+    “--，++”：  
+    a++(--)先输出再自加（自减）  
+    ++(--)a先自加（自减）再输出
+    ```
+    class A{
+        public:
+            void init(int a,int b){
+                this->a = a;
+                this->b = b;
+            }
+            A& operator++(){类内++a
+                ++a;
+                ++b;
+                return *this;
+            }
+            int a;
+            int b;
+    };
+    //必须返回引用，负责会建立副本，相当于拷贝
+    A& operator++(A &a,int){//类外a++
+        A *c = new A;
+        c->a = a.a;
+        c->b = a.b;
+        a.a ++;
+        a.b ++;
+        return *c;
+    }
+    ostream& operator<<(ostream &cout,A &a){//加“&”可以连续输出
+        cout << a.a << "  " << a.b << endl;
+    }
+    int main(){
+        A a,b;
+        a.init(20,10);
+        b.init(40,30);
+
+        cout << a << endl;
+        cout << ++a << endl;
+        cout << a << endl;
+
+        cout << b << endl;
+        cout << b++ << endl;
+        cout << b << endl;
+
+        int c= 10,d=20;
+        cout << c << endl;
+        cout << c++ << endl;
+        cout << c << endl;
+
+        cout << d << endl;
+        cout << ++d << endl;
+        cout << d << endl;
+        return 0;
+    }      
+    ```
+    - 关系运算符重载  
+    “<，>，<=，>=，!=，==”
+    ```
+    class B{
+        public:
+            int a,b;
+            void init(int a,int b){
+                this->a = a;
+                this->b = b;
+            }
+    };
+    class A{
+        public:
+            int a,b;
+            void init(int a,int b){
+                this->a = a;
+                this->b = b;
+            }
+            bool operator==(B &b){
+                if(this->a == b.a && this->b == b.b){
+                    return true;
+                }
+                return false;
+            }
+            bool operator<=(B &b){
+                if(this->a <= b.a && this->b <= b.b){
+                    return true;
+                }
+                return false;
+            }
+    };
+    bool operator!=(A &a,B &b){
+        if(a.a != b.a && a.b != b.b){
+            return true;
+        }
+        return false;
+    }
+    int main(){
+        A a;
+        B b;
+        a.init(10,20);
+        b.init(10,20);
+        cout << (a <= b) << endl;
+        cout << (a == b) << endl;
+        cout << (a != b) << endl;
+        return 0;
+    }
+    ```
+    - 赋值运算符  
+    与拷贝函数类似，拷贝函数就是特殊的=重载
+    在栈内创建：
+    ```
+    class A{
+        public:
+            int a;
+            int b;
+            void init(int a,int b){
+                this->a = a;
+                this->b = b;
+            }
+    };
+    class B{
+        public:
+            int a;
+            int b;
+            void init(int a,int b){
+                this->a = a;
+                this->b = b;
+            }
+            B& operator=(A &a){
+                this->a = a.a;
+                this->b = a.b;
+                return *this;
+            }
+    };
+    int main(){
+        A a;
+        a.init(10,20);
+        b = a;
+        cout << b.a << endl;
+        cout << b.b << endl;
+    }
+    ```
+    在堆内创建：
+    ```
+    class A{
+        public:
+            int *a,*b;
+            void init(int a,int b){
+                this->a = new int(a);
+                this->b = new int(b);
+            }
+            A& operator=(A &a)
+            {
+                if(this->a != NULL || this->b != NULL)
+                {
+                    delete this->a;
+                    this->a = NULL;
+                    delete this->b;
+                    this->b = NULL;
+                }
+                this->a = new int(*a.a);
+                this->b = new int(*a.b);
+                return *this;
+            }
+            ~A(){
+                if(a != NULL || b != NULL){
+                    cout << "A" << endl;
+                    delete a;
+                    a = NULL;
+                    delete b;
+                    b = NULL;
+                }
+            }
+    };
+    ostream& operator<<(ostream &cout,A &a){
+        cout << *a.a << endl;
+        cout << *a.b << endl;
+    }
+    int main(){
+        A a;
+        A a1;
+        a1.init(0,0);
+        a.init(10,20);
+        a1 = a;
+        cout << a1 << endl;
+        return 0;
+    }
+    ```
+  - 8.3.2 继承  
+    - 语法：  
+        class 子类（派生类）A:（继承方式）public 父类（基类）B
+    - 继承方式：
+      - 公共继承：  
+            父类是公共，继承到子类是公共，类外可以访问  
+            父类是保护，继承到子类是保护，类外不可访问  
+            父类是私有，无法继承到子类  
+      - 保护继承：  
+            父类是公共，继承到子类是保护，类外不可访问  
+            父类是保护，继承到子类是保护，类外不可访问  
+            父类是私有，无法继承到子类  
+      - 私有继承：  
+            父类是公共，继承到子类是私有，类外不可访问  
+            父类是保护，继承到子类是私有，类外不可访问  
+            父类是私有，无法继承到子类  
+    - 对象模型：  
+            将所有父类成员继承到子类中，只是被编译器隐藏，没有显示，权限限制
+    - 注意：  
+      - 继承后的权限向上兼容，高级权限不可降低，低级权限可以升高  
+        父类权限|继承方式|子类权限
+        :-:|:-:|:-:
+        公共|公共|公共
+        保护|公共|保护
+        公共|保护|保护
+        保护|保护|保护
+        公共|私有|私有
+        保护|私有|私有
+      - 父类的私有成员不可被继承  
+      - 程序举例：
+      ```
+      class base//公共页面
+      {
+          public://向下兼容访问，继承
+              int a;
+          protected://向下兼容访问，继承
+              int b;
+          private://无论如何都无法访问，继承
+              int c;
+      };
+      class Java:public base//公共继承
+      {
+          public:
+              void init()
+              {
+                  a = 10;//父类是公共成员，继承到子类是公共成员
+                  b = 20;//父类是保护成员，继承到子类是保护成员
+                  // c = 20;//父类是私有成员，无法继承到子类
+              }
+          protected:
+              int d;
+          private:
+      };
+      class Python:protected base
+      {
+          public:
+              void init(){
+                  a = 10;//父类是公共成员，继承到子类是保护成员
+                  b = 20;//父类是保护成员，继承到子类是保护成员
+                  // c = 20;//父类是私有成员，无法继承到子类
+              }
+          protected:
+              int d;
+          private:
+      };
+      class CPP:private base
+      {
+          public:
+              void init(){
+                  a = 10;//父类是公共成员，继承到子类是私有成员
+                  b = 20;//父类是保护成员，继承到子类是私有成员
+                  // c = 20;//父类是私有成员，无法继承到子类
+              }
+          protected:
+              int d;
+          private:
+      };
+      ```
+      - 子类的构造函数可以覆盖父类的构造函数  
+      - 子类的成员可以覆盖父类中的所有同名的成员，如果需要访问父类同名成员，需加作用域，如果子类中没有与父类中同名的成员变量，即子类继承父类的成员变量以及值  
+      - 如果子类有同名成员，则调用子类，不会调用父类成员  
+      - 先有父类，在有子类  
+      - 栈：先进后出  
+      - 静态共用一块内存，不参与继承  
+      - 程序举例：
+        ```
+        class base{
+            public:
+                int a;
+                int b;
+                static int c;
+                base(){
+                    this->a = 101;
+                    this->b = 201;
+                    cout << "base的构造函数！" << endl;
+                }
+                ~base(){
+                    cout << "base的析构函数！" << endl;
+                }
+
+        };
+        class A:public base{
+            public:
+                int a;
+                int b;
+                static int c;
+                A(){
+                    this->a = 102;
+                    this->b = 202;
+                    cout << "A的构造函数！" << endl;
+                }
+                ~A(){
+                    cout << "A的析构函数！" << endl;
+                }
+        };
+        int base::c = 301;
+        int A::c = 302;
+        int main(){
+            A a;
+            cout << a.base::a << endl;
+            cout << a.a << endl;
+            cout << a.base::c << endl;
+            cout << a.c << endl;
+            cout << base::c << endl;
+
+            a.base::c+=10;
+            cout << a.base::c << endl;
+            cout << a.c << endl;
+
+            return 0;
+        }
+        /*输出
+        base的构造函数！ //先有父类
+        A的构造函数！ //再有子类
+        101
+        102
+        301
+        302
+        301
+        311
+        302
+        A的析构函数！
+        base的析构函数！
+        */
+        ```
+      - 如果子类同时继承多个类并且存在多个同名的成员变量及函数，而且子类没有定义时，则在调用时必须指定父类作用域，否则会错误（二义性）
+  - 8.3.3 多态  
+    - 静态多态：  
+        函数重载  
+        运算符重载  
+        函数地址早绑定，编译阶段确定函数地址  
+    - 动态多态：  
+        派生类  
+        虚拟数  
+        函数地址晚绑定，运行阶段确定函数地址:  
+        - 条件：  
+            1.有继承关系  
+            2.子类必须要有“重写”父类的虚函数，子类的重写函数“virtual”可写可不写  
+            3.使用：  
+                父类的指针或者引用，指向子类的对象  
+            4.原理：  
+                父类定义成员函数：  
+                    父类：虚函数指针 ===> 虚函数表，其中存储着函数的地址：父类：func():0x0001  
+                子类继承父类的成员函数：  
+                    父类：虚函数指针 ===> 虚函数表，其中存储着函数的地址：父类：func():0x0001  
+                    子类：虚函数指针 ===> 虚函数表，其中存储着函数的地址：父类：func():0x0001  
+                当子类重写父类的虚函数时，会覆盖（替换）为子类的虚函数地址，父类的成员函数不变，即：  
+                    父类：虚函数指针 ===> 虚函数表，其中存储着函数的地址：父类：func():0x0001  
+                    子类：虚函数指针 ===> 虚函数表，其中存储着函数的地址：子类：func():0x0002  
+                当父类的指针或者引用指向子类对象时：发生多态，即：  
+                    通过虚函数表找到子类函数执行  
+  - 8.3.4 作用域  
   - 8.3.5 纯虚函数与抽象类
-  - 8.3.6 析构函数与纯虚析构
+  - 8.3.6 析构函数与纯虚析构  
 #### 9. stuct结构体
 #### 10. 文本文件操作
 #### 11. 模板
-#### 12. 初识STL库
+## 初识STL库
 
 
 
