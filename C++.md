@@ -2208,7 +2208,7 @@ int main()
    }; 
    int main() 
    { 
-       User *user = new User(); 
+       User *user = new User(); //对User实例化
        user->Action(); 
        delete user; 
    } 
@@ -2290,8 +2290,272 @@ int main()
 
 #### 9. stuct结构体
 
+##### 9.1 C中struct
+
+- 在C中struct只单纯的用作数据的复合类型，也就是说，在结构体声明中只能将数据成员放在里面，而不能将函数放在里面。
+
+- 在C结构体声明中不能使用C++访问修饰符，如：public、protected、private 而在C++中可以使用。
+
+- 在C中定义结构体变量，如果使用了下面定义必须加struct。
+
+- C的结构体不能继承（没有这一概念）。
+
+- 若结构体的名字与函数名相同，可以正常运行且正常的调用！例如：可以定义与 struct Base 不冲突的 void Base() {}。
+
+  ```c++
+  struct Base {            // public
+      int v1; 
+  	//public:      //error
+          int v2; 
+      //private:
+          int v3; 
+      //void print()// c中不能在结构体中嵌入函数
+      //{       
+      //    printf("%s\n","hello world");//error!
+      //};    
+  };
+  void Base()
+  {
+      printf("%s\n","I am Base func");
+  }
+  //struct Base base1;  //ok
+  //Base base2; //error
+  int main() {
+      struct Base base;
+      base.v1=1;
+      //base.print();
+      printf("%d\n",base.v1);
+      Base();
+      return 0;
+  }
+  ```
+
+##### 9.2 C++中struct
+
+- C++结构体中不仅可以定义数据，还可以定义函数。
+
+- C++结构体中可以使用访问修饰符，如：public、protected、private 。
+
+- C++结构体中成员默认为public，而类中默认为private，基本只有这两个区别
+
+- C++结构体使用可以直接使用不带struct。
+
+- C++继承。
+
+- 若结构体的名字与函数名相同，可以正常运行且正常的调用！但是定义结构体变量时候只用用带struct的！
+
+- 未添加同名函数前：
+
+  ```c++
+  struct Student {};
+  Student(){}
+  Struct Student s; //ok
+  Student s;  //ok
+  ```
+
+- 添加同名函数后：
+
+  ```c++
+  struct Student {};
+  Student(){}
+  Struct Student s; //ok
+  Student s;  //error
+  ```
+
+##### 9.3 总结
+
+| C                                                      | C++                                                          |
+| :----------------------------------------------------- | ------------------------------------------------------------ |
+| 不能将函数放在结构体声明                               | 能将函数放在结构体声明                                       |
+| 在C结构体声明中不能使用C++访问修饰符。                 | public、protected、private 在C++中可以使用。                 |
+| 在C中定义结构体变量，如果使用了下面定义必须加struct。  | 可以不加struct                                               |
+| 结构体不能继承（没有这一概念）。                       | 可以继承                                                     |
+| 若结构体的名字与函数名相同，可以正常运行且正常的调用！ | 若结构体的名字与函数名相同，使用结构体，只能使用带struct定义！ |
+
 #### 10. 文本文件操作
+
+##### 10.1 文本文件写操作
+
+1. 包含头文件：
+
+   ```c++
+   #include <fstream>
+   ```
+
+2. 创建流对象：
+
+   ```c++
+   ofstream ofs;
+   ```
+
+3. 打开文件：
+
+   ```c++
+   ofs.open("文件路径",打开方式);
+   ```
+
+   打开方式：
+
+   |    代码     |            意义            |
+   | :---------: | :------------------------: |
+   |   ios::in   |       为读文件而打开       |
+   |  ios::out   |       为写文件而打开       |
+   |  ios::ate   |      初始位置：文件尾      |
+   |  ios::app   |       追加方式写文件       |
+   | ios::trunc  | 如果文件存在先删除，在创建 |
+   | ios::binary |         二进制方式         |
+
+   可以使用 “|” 配合使用，如：
+
+   ```c++
+   ofs.open("文件路径",ios::app | ios::trunc);
+   ```
+
+4. 写数据：
+
+   ```c++
+   ofs << "数据" ;
+   ```
+
+5.  关闭文件：
+
+   ```c++
+   ofs.close();
+   ```
+
+6. 完整程序
+
+   ```c++
+   #include <iostream>
+   #include <fstream>
+   #include <string>
+   using namespace std;
+   int main()
+   {
+       ofstream ofs;//类实例化
+       ofs.open("./fstream_1.txt",ios::out);
+       ofs << "姓名：张三" << endl;
+       ofs << "年龄：20" << endl;
+       ofs << "年级：大二" << endl;
+       ofs << "学历：本科在读" << endl;
+       ofs.close();
+       
+       return 0;
+   }
+   ```
+
+##### 10.2 文本文件读操作
+
+1. 包含头文件：
+
+   ```c++
+   #include <fstream>
+   ```
+
+2. 创建流对象：
+
+   ```c++
+   ifstream ifs;
+   ```
+
+3. 打开文件并判断文件是否打开成功：
+
+   ```c++
+   ifs.open("文件路径",打开方式);
+   ```
+
+4. 读数据
+
+   四种读取方式
+
+   ```c++
+   void read1(ifstream &ifs)
+   {
+       ifs.open("./fstream_1.txt",ios::in);
+       if(!ifs.is_open())
+       {
+           cout << "文件打开失败！" << endl;
+           return;
+       }
+       char buf[1024] = {0};
+       while(ifs >> buf)
+           cout << buf << endl;
+   }
+   ```
+
+   ```c++
+   void read2(ifstream &ifs)
+   {
+       ifs.open("./fstream_1.txt",ios::in);
+       if(!ifs.is_open())
+       {
+           cout << "文件打开失败！" << endl;
+           return;
+       }
+       char buf[1024] = {0};
+       while(ifs.getline(buf,sizeof(buf)))
+           cout << buf << endl;
+   }
+   ```
+
+   ```c++
+   void read3(ifstream &ifs)
+   {
+       ifs.open("./fstream_1.txt",ios::in);
+       if(!ifs.is_open())
+       {
+           cout << "文件打开失败！" << endl;
+           return;
+       }
+       string buf;
+       while(getline(ifs,buf))
+           cout << buf << endl;
+   }
+   ```
+
+   ```c++
+   void read4(ifstream &ifs)
+   {
+       ifs.open("./fstream_1.txt",ios::in);
+       if(!ifs.is_open())
+       {
+           cout << "文件打开失败！" << endl;
+           return;
+       }
+       char c;
+       while((c=ifs.get()) != EOF)
+           cout << c;
+   }
+   ```
+
+5. 关闭文件：
+
+   ```c++
+   ofs.close();
+   ```
+
+6. 完整程序：
+
+   ```c++
+   #include <iostream>
+   #include <fstream>
+   #include <string>
+   using namespace std;
+   int main()
+   {
+       ifstream ifs;
+       read1(ifs);
+       read2(ifs);
+       read3(ifs);
+       read4(ifs);
+       ifs.close();
+       
+       return 0;
+   }
+   ```
+
 #### 11. 模板
+
 ## 初识STL库
 
 
